@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Parent Regulation Architecture Assessment | Neurodivergent Uprising</title>
+<meta name="description" content="A structural diagnostic for parents of neurodivergent children. Assess your institutional load, regulation capacity, and support architecture." />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: #FFF8F0; color: #2D2D2D; -webkit-font-smoothing: antialiased; }
+  ::selection { background: #7B2D6E33; }
+  input:focus, textarea:focus { outline: 2px solid #7B2D6E; outline-offset: 2px; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .fadeUp { animation: fadeUp 0.45s ease-out both; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef } = React;
+
+const FONT = "'DM Sans', sans-serif";
+const SERIF = "'Source Serif 4', Georgia, serif";
+const C = {
+  bg: "#FFF8F0", surface: "#FFFFFF", darkBerry: "#4A1942", berry: "#7B2D6E",
+  lightBerry: "#F0E0ED", midBerry: "#C490B8", cream: "#FFF8F0",
+  warmLight: "#FEF0EB", accent: "#D4A574", accentWarm: "#C4553A",
+  text: "#2D2D2D", textMuted: "#6B6B6B", border: "#E8DDD8",
+  green: "#3D7A4A", amber: "#B8860B", red: "#A63D40",
+};
+
+// ===== ASSESSMENT DATA =====
+const MODULE1 = {
+  title: "Institutional Load Inventory",
+  subtitle: "What the system is asking of you before you even get to yourself",
+  intro: "Schools, therapists, doctors, and service providers all require your time, energy, and advocacy. This module measures the structural load of navigating those systems — not whether you're handling it well, but how much the system is demanding of you.",
+  questions: [
+    {
+      q: "How many hours per week do you spend on activities directly related to navigating your child's institutional systems — IEP prep, emails to teachers, scheduling, researching rights, documentation?",
+      opts: [
+        "0–2 hours per week",
+        "3–6 hours per week",
+        "7–12 hours per week",
+        "13+ hours per week"
+      ]
+    },
+    {
+      q: "In your most recent school meeting (IEP, 504, parent-teacher), how did the power dynamic feel?",
+      opts: [
+        "Collaborative — I felt heard and we worked together",
+        "Uneven — I had to advocate hard but was eventually heard",
+        "Adversarial — I was outnumbered and had to fight for basics",
+        "Performative — they documented agreement but nothing actually changes"
+      ]
+    },
+    {
+      q: "Has your child's school ever presented a plan or decision as if you had agreed to it — when you hadn't actually been given a real choice?",
+      opts: [
+        "Never — I've always felt genuinely consulted",
+        "Once or twice — isolated incidents",
+        "Regularly — consent is documented but I didn't feel like I could say no",
+        "This is the norm — I sign things because the alternative feels worse"
+      ]
+    },
+    {
+      q: "When your child communicates distress non-verbally — shutdown, withdrawal, refusal to engage, physical symptoms — how do the professionals in their life respond?",
+      opts: [
+        "They recognize it as communication and adjust their approach",
+        "Some do, some don't — it depends on the person",
+        "Most treat it as non-compliance or a behavior to manage",
+        "My child's non-verbal distress signals are consistently ignored or punished"
+      ]
+    },
+    {
+      q: "How often do you have to re-explain your child's needs to professionals who should already know?",
+      opts: [
+        "Rarely — their team understands and remembers",
+        "A few times a year — during transitions or with new staff",
+        "Regularly — I carry the institutional memory for my child",
+        "Constantly — I am the only person who holds the full picture"
+      ]
+    },
+    {
+      q: "When you push back on a recommendation or refuse a service, how is that received?",
+      opts: [
+        "Respectfully — disagreement is normal and accepted",
+        "With mild resistance — I have to explain myself but it's manageable",
+        "With pressure — I feel guilt-tripped or told I'm harming my child",
+        "With retaliation — reduced services, negative notes, or being labeled 'difficult'"
+      ]
+    }
+  ]
+};
+
+const MODULE2 = {
+  title: "Regulation Under Caregiving",
+  subtitle: "Where your nervous system's capacity is actually going",
+  intro: "This isn't a stress quiz. This measures where your nervous system's regulation capacity is being spent — and what's left for you after the caregiving infrastructure takes its share.",
+  questions: [
+    {
+      q: "When your child is in crisis — meltdown, shutdown, school refusal — what happens to YOUR nervous system?",
+      opts: [
+        "I can stay regulated and respond from a grounded place",
+        "I dysregulate briefly but recover relatively quickly",
+        "I absorb their distress — my body mirrors their state",
+        "I shut down too — I cannot access my own regulation when they're in crisis"
+      ]
+    },
+    {
+      q: "How often do you go to bed still carrying the activation — tension, racing thoughts, emotional residue — from your child's day?",
+      opts: [
+        "Rarely — I can usually process and release before sleep",
+        "A few times a month",
+        "Multiple times a week",
+        "Most nights — I carry it to bed and wake up still holding it"
+      ]
+    },
+    {
+      q: "When was the last time you did something purely for your own regulation — not productivity, not caregiving, not maintenance — just for your nervous system?",
+      opts: [
+        "Today or yesterday",
+        "This week",
+        "I can't remember exactly — maybe a few weeks ago",
+        "I genuinely cannot remember"
+      ]
+    },
+    {
+      q: "Can you tell the difference between 'I'm tired' and 'my nervous system is depleted'?",
+      opts: [
+        "Yes — I can distinguish between physical tiredness and nervous system depletion",
+        "Sometimes — when it's extreme I can tell",
+        "Not really — it all feels like the same exhaustion",
+        "I didn't know there was a difference"
+      ]
+    },
+    {
+      q: "After an especially hard day with your child's systems — bad meeting, school call, meltdown at pickup — do you have a recovery protocol?",
+      opts: [
+        "Yes — I have a deliberate recovery process",
+        "Sort of — I have a few things that help but nothing structured",
+        "No — I just push through to the next thing",
+        "I don't have time or space for recovery — the next demand is already here"
+      ]
+    }
+  ]
+};
+
+const MODULE3 = {
+  title: "Support Architecture",
+  subtitle: "What's actually holding you up — and what's missing",
+  intro: "Regulation doesn't happen in isolation. It happens inside structures — relationships, environments, routines, and systems that either refill your capacity or drain it. Let's see what's actually in place.",
+  questions: [
+    {
+      q: "Do you have at least one person who fully understands your child's neurology AND your experience as their parent — without you having to educate them?",
+      opts: [
+        "Yes — multiple people",
+        "Yes — one person",
+        "Sort of — people try but I still feel like I'm translating",
+        "No — I am alone in this understanding"
+      ]
+    },
+    {
+      q: "When you need to step away from caregiving duties — even for an hour — is there someone who can step in without you pre-loading them with instructions?",
+      opts: [
+        "Yes — they know what to do",
+        "Sometimes — but it requires significant setup",
+        "Rarely — the preparation is so much work it's not worth it",
+        "Never — there is no one who can hold what I hold"
+      ]
+    },
+    {
+      q: "Does your own daily environment — your space, your schedule, your sensory landscape — support YOUR regulation, or is it entirely designed around your child's needs?",
+      opts: [
+        "My environment supports both of us",
+        "Partially — some things serve me, most serve my child",
+        "Almost entirely designed around my child — my needs come last",
+        "I haven't thought about my own environment as something that matters"
+      ]
+    },
+    {
+      q: "Do you have access to professional support — therapist, coach, support group — that understands BOTH neurodivergence AND the caregiver experience?",
+      opts: [
+        "Yes — and it's genuinely helpful",
+        "Yes — but they don't fully get the ND caregiving piece",
+        "No — I haven't found anyone who understands this intersection",
+        "I can't afford or access professional support right now"
+      ]
+    },
+    {
+      q: "Is there any part of your week that is structurally protected — time that cannot be consumed by caregiving or institutional demands, no matter what?",
+      opts: [
+        "Yes — I have protected time that I actually use",
+        "In theory — it's on the calendar but gets consumed regularly",
+        "No — every part of my week is available to be claimed",
+        "The concept of protected time feels impossible"
+      ]
+    }
+  ]
+};
+
+// ===== SCORING =====
+function scoreModule(answers, qCount) {
+  let t = 0; for (let i = 0; i < qCount; i++) t += (answers[i] || 0); return t;
+}
+function getLevel(score, max) {
+  const p = score / max;
+  if (p <= 0.33) return { label: "Manageable", color: C.green, icon: "◈" };
+  if (p <= 0.66) return { label: "Heavy", color: C.amber, icon: "◆" };
+  return { label: "Crushing", color: C.red, icon: "◉" };
+}
+
+function getInstSummary(s) {
+  if (s <= 5) return "Your institutional systems are mostly functional. The load exists but isn't consuming your core capacity. This is rare — protect whatever is working.";
+  if (s <= 11) return "Significant capacity is being consumed by institutional navigation. You're spending hours and energy on advocacy, documentation, and re-education that the system should handle but doesn't. This load is invisible to everyone except you.";
+  return "The system is structurally overwhelming your capacity. Between consent theater, adversarial meetings, and carrying your child's entire institutional memory, you are doing a second unpaid job. This is not a time management problem. It's an architecture problem.";
+}
+function getRegSummary(s) {
+  if (s <= 4) return "Your nervous system has capacity remaining after caregiving demands. You can access your own regulation even during your child's difficult moments. This is your foundation — don't let it erode.";
+  if (s <= 9) return "Your regulation capacity is being consumed faster than it recovers. You're co-regulating your child from a depleting tank. The gap between what's demanded and what you have to give is widening.";
+  return "Your nervous system is running a deficit. You're regulating your child from a state of depletion — which means you're both running on fumes. This isn't a personal failure. It's what happens when the architecture demands more than any human system can sustain.";
+}
+function getSupSummary(s) {
+  if (s <= 4) return "You have structural support around your caregiving. People, systems, and protected space exist. This is the foundation that makes everything else survivable.";
+  if (s <= 9) return "Gaps in your support architecture are increasing your load. You may have people who care but can't fully step in, or time that exists in theory but not in practice. Every missing support structure is weight you carry alone.";
+  return "You are carrying institutional and caregiving weight with almost no structural support. The isolation isn't incidental — it's what the system produces when one person becomes the single point of failure for a child's entire infrastructure.";
+}
+
+// ===== COMPONENTS =====
+function Header({ step }) {
+  const steps = ["Institutional Load", "Your Regulation", "Support Architecture", "Your Results"];
+  if (step < 0) return null;
+  return (
+    <div style={{ background: C.darkBerry, padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
+      <div style={{ fontFamily: FONT, fontSize: "11px", fontWeight: 700, color: C.midBerry, letterSpacing: "2px", textTransform: "uppercase" }}>NDU</div>
+      <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+        {steps.map((s, i) => (
+          <div key={i} style={{
+            width: i <= step ? "auto" : "8px", height: "8px",
+            padding: i <= step ? "2px 10px" : "0",
+            borderRadius: "100px",
+            background: i <= step ? C.berry : C.midBerry + "44",
+            fontSize: "10px", fontFamily: FONT, fontWeight: 600,
+            color: i <= step ? "#fff" : "transparent",
+            display: "flex", alignItems: "center", transition: "all 0.3s ease"
+          }}>{i <= step ? s : ""}</div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Wrap({ children }) { return <div style={{ maxWidth: "680px", margin: "0 auto", padding: "0 20px 60px" }}>{children}</div>; }
+
+function QuestionCard({ number, total, question, options, selected, onSelect }) {
+  return (
+    <div className="fadeUp" style={{ background: C.surface, border: "1px solid " + C.border, borderRadius: "16px", padding: "28px", marginBottom: "20px" }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
+        <span style={{ fontFamily: FONT, fontSize: "12px", color: C.textMuted }}>{number}/{total}</span>
+      </div>
+      <p style={{ fontFamily: SERIF, fontSize: "17px", lineHeight: 1.6, color: C.text, marginBottom: "20px", fontWeight: 400 }}>{question}</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {options.map((opt, i) => (
+          <button key={i} onClick={() => onSelect(i)} style={{
+            width: "100%", textAlign: "left", padding: "14px 18px",
+            borderRadius: "10px",
+            border: selected === i ? "2px solid " + C.berry : "1.5px solid " + C.border,
+            background: selected === i ? C.lightBerry : C.surface,
+            fontFamily: FONT, fontSize: "14px", lineHeight: 1.5,
+            color: selected === i ? C.darkBerry : C.text,
+            fontWeight: selected === i ? 600 : 400,
+            cursor: "pointer", transition: "all 0.2s ease"
+          }}>{opt}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ScoreBar({ label, score, max, level }) {
+  const pct = Math.round((score / max) * 100);
+  return (
+    <div style={{ marginBottom: "24px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "8px" }}>
+        <span style={{ fontFamily: FONT, fontSize: "14px", fontWeight: 600, color: C.text }}>{label}</span>
+        <span style={{ fontFamily: FONT, fontSize: "13px", fontWeight: 700, color: level.color }}>{level.icon} {level.label}</span>
+      </div>
+      <div style={{ width: "100%", height: "10px", background: C.border, borderRadius: "100px", overflow: "hidden" }}>
+        <div style={{ width: pct + "%", height: "100%", background: level.color, borderRadius: "100px", transition: "width 0.8s ease" }} />
+      </div>
+    </div>
+  );
+}
+
+function Btn({ children, onClick, primary, disabled, full }) {
+  return (
+    <button onClick={onClick} disabled={disabled} style={{
+      padding: "14px 28px", borderRadius: "10px",
+      border: primary ? "none" : "1.5px solid " + C.border,
+      background: disabled ? C.border : primary ? C.berry : C.surface,
+      color: disabled ? C.textMuted : primary ? "#fff" : C.text,
+      fontFamily: FONT, fontSize: "15px", fontWeight: 600,
+      cursor: disabled ? "not-allowed" : "pointer",
+      width: full ? "100%" : "auto",
+      boxShadow: primary && !disabled ? "0 2px 12px " + C.berry + "33" : "none",
+      transition: "all 0.2s ease"
+    }}>{children}</button>
+  );
+}
+
+function Footer() {
+  return (
+    <div style={{ textAlign: "center", padding: "40px 20px 20px", borderTop: "1px solid " + C.border, marginTop: "40px" }}>
+      <div style={{ fontFamily: FONT, fontSize: "11px", fontWeight: 700, color: C.berry, letterSpacing: "2px", marginBottom: "4px" }}>NEURODIVERGENT UPRISING</div>
+      <div style={{ fontFamily: FONT, fontSize: "12px", color: C.textMuted }}>Research-backed counter-architecture for neurodivergent lives</div>
+      <div style={{ fontFamily: FONT, fontSize: "11px", color: C.textMuted, marginTop: "8px" }}>
+        <a href="https://neurodivergentuprising.com" style={{ color: C.berry, textDecoration: "none" }}>neurodivergentuprising.com</a>
+      </div>
+    </div>
+  );
+}
+
+// ===== MAIN APP =====
+function App() {
+  const [step, setStep] = useState(-1);
+  const [m1, setM1] = useState({});
+  const [m2, setM2] = useState({});
+  const [m3, setM3] = useState({});
+  const [emailGate, setEmailGate] = useState({ email: "", firstName: "", submitting: false, error: "", done: false });
+
+  const go = (s) => { setStep(s); window.scrollTo({ top: 0, behavior: "smooth" }); };
+
+  const s1 = scoreModule(m1, 6);
+  const s2 = scoreModule(m2, 5);
+  const s3 = scoreModule(m3, 5);
+  const l1 = getLevel(s1, 18);
+  const l2 = getLevel(s2, 15);
+  const l3 = getLevel(s3, 15);
+  const totalScore = s1 + s2 + s3;
+  const overallLevel = getLevel(totalScore, 48);
+
+  // ===== WELCOME =====
+  if (step === -1) return (
+    <div style={{ minHeight: "100vh", background: C.bg }}>
+      <div style={{ background: C.darkBerry, padding: "14px 20px" }}>
+        <div style={{ fontFamily: FONT, fontSize: "11px", fontWeight: 700, color: C.midBerry, letterSpacing: "2px", textTransform: "uppercase" }}>NEURODIVERGENT UPRISING</div>
+      </div>
+      <Wrap>
+        <div className="fadeUp" style={{ textAlign: "center", paddingTop: "60px" }}>
+          <div style={{ fontFamily: FONT, fontSize: "11px", fontWeight: 700, color: C.berry, letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: "16px" }}>STRUCTURAL DIAGNOSTIC</div>
+          <h1 style={{ fontFamily: SERIF, fontSize: "clamp(28px, 5vw, 42px)", fontWeight: 700, color: C.darkBerry, lineHeight: 1.2, marginBottom: "20px" }}>
+            Parent Regulation<br />Architecture Assessment
+          </h1>
+          <p style={{ fontFamily: SERIF, fontSize: "18px", color: C.text, lineHeight: 1.7, maxWidth: "500px", margin: "0 auto 32px", fontStyle: "italic", fontWeight: 300 }}>
+            This isn't about how you're coping.<br />It's about what the system is costing you.
+          </p>
+        </div>
+
+        <div style={{ background: C.surface, border: "1px solid " + C.border, borderRadius: "16px", padding: "32px", marginBottom: "32px" }}>
+          <p style={{ fontFamily: FONT, fontSize: "15px", lineHeight: 1.8, color: C.text, marginBottom: "20px" }}>
+            You've been told to practice self-care. Take a bath. Breathe. Find five minutes for yourself. And you've tried. But the system your neurodivergent child navigates — IEPs, evaluations, accommodations that exist on paper and vanish in practice — is structurally designed to consume your regulation capacity.
+          </p>
+          <p style={{ fontFamily: FONT, fontSize: "15px", lineHeight: 1.8, color: C.text, marginBottom: "20px" }}>
+            This assessment measures where that capacity is actually going:
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+            {[
+              ["Institutional Load", "How much the system is demanding of you"],
+              ["Regulation Capacity", "What's left for you after the caregiving infrastructure takes its share"],
+              ["Support Architecture", "What structures exist around you — and what's missing"]
+            ].map(([title, desc], i) => (
+              <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
+                <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: C.lightBerry, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: FONT, fontSize: "13px", fontWeight: 700, color: C.berry, flexShrink: 0, marginTop: "2px" }}>{i + 1}</div>
+                <div>
+                  <div style={{ fontFamily: FONT, fontSize: "14px", fontWeight: 600, color: C.darkBerry }}>{title}</div>
+                  <div style={{ fontFamily: FONT, fontSize: "13px", color: C.textMuted, lineHeight: 1.5 }}>{desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p style={{ fontFamily: FONT, fontSize: "13px", color: C.textMuted, lineHeight: 1.6 }}>
+            Takes 10–12 minutes. Not because you need to try harder — because you need to see what the architecture is doing to you.
+          </p>
+        </div>
+
+        <div style={{ textAlign: "center" }}>
+          <Btn primary onClick={() => go(0)}>Begin Assessment</Btn>
+        </div>
+        <Footer />
+      </Wrap>
+    </div>
+  );
+
+  // ===== MODULE 1 =====
+  if (step === 0) return (
+    <div style={{ minHeight: "100vh", background: C.bg }}>
+      <Header step={0} />
+      <Wrap>
+        <div style={{ padding: "32px 0 20px" }}>
+          <div style={{ fontFamily: FONT, fontSize: "11px", fontWeight: 700, color: C.berry, letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>MODULE 1</div>
+          <h2 style={{ fontFamily: SERIF, fontSize: "26px", fontWeight: 700, color: C.darkBerry, marginBottom: "6px" }}>{MODULE1.title}</h2>
+          <p style={{ fontFamily: FONT, fontSize: "14px", color: C.textMuted, marginBottom: "20px" }}>{MODULE1.subtitle}</p>
+          <div style={{ background: C.lightBerry, borderRadius: "12px", padding: "20px", marginBottom: "28px" }}>
+            <p style={{ fontFamily: FONT, fontSize: "14px", color: C.darkBerry, lineHeight: 1.7 }}>{MODULE1.intro}</p>
+          </div>
+        </div>
+        {MODULE1.questions.map((q, i) => (
+          <QuestionCard key={i} number={i+1} total={6} question={q.q} options={q.opts} selected={m1[i]} onSelect={v => setM1(p => ({...p, [i]: v}))} />
+        ))}
+        <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: "12px" }}>
+          <Btn primary onClick={() => go(1)} disabled={Object.keys(m1).length < 6}>Continue to Regulation →</Btn>
+        </div>
+        <Footer />
+      </Wrap>
+    </div>
+  );
+
+  // ===== MODULE 2 =====
+  if (step === 1) return (
+    <div style={{ minHeight: "100vh", background: C.bg }}>
+      <Header step={1} />
+      <Wrap>
+        <div style={{ padding: "32px 0 20px" }}>
+          <div style={{ fontFamily: FONT, fontSize: "11px", fontWeight: 700, color: C.berry, letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>MODULE 2</div>
+          <h2 style={{ fontFamily: SERIF, fontSize: "26px", fontWeight: 700, color: C.darkBerry, marginBottom: "6px" }}>{MODULE2.title}</h2>
+          <p style={{ fontFamily: FONT, fontSize: "14px", color: C.textMuted, marginBottom: "20px" }}>{MODULE2.subtitle}</p>
+          <div style={{ background: C.lightBerry, borderRadius: "12px", padding: "20px", marginBottom: "28px" }}>
+            <p style={{ fontFamily: FONT, fontSize: "14px", color: C.darkBerry, lineHeight: 1.7 }}>{MODULE2.intro}</p>
+          </div>
+        </div>
+        {MODULE2.questions.map((q, i) => (
+          <QuestionCard key={i} number={i+1} total={5} question={q.q} options={q.opts} selected={m2[i]} onSelect={v => setM2(p => ({...p, [i]: v}))} />
+        ))}
+        <div style={{ display: "flex", justifyContent: "space-between", paddingTop: "12px" }}>
+          <Btn onClick={() => go(0)}>← Back</Btn>
+          <Btn primary onClick={() => go(2)} disabled={Object.keys(m2).length < 5}>Continue to Support →</Btn>
+        </div>
+        <Footer />
+      </Wrap>
+    </div>
+  );
+
+  // ===== MODULE 3 =====
+  if (step === 2) return (
+    <div style={{ minHeight: "100vh", background: C.bg }}>
+      <Header step={2} />
+      <Wrap>
+        <div style={{ padding: "32px 0 20px" }}>
+          <div style={{ fontFamily: FONT, fontSize: "11px", fontWeight: 700, color: C.berry, letterSpacing: "2px", textTransform: "uppercase", marginBottom: "8px" }}>MODULE 3</div>
+          <h2 style={{ fontFamily: SERIF, fontSize: "26px", fontWeight: 700, color: C.darkBerry, marginBottom: "6px" }}>{MODULE3.title}</h2>
+          <p style={{ fontFamily: FONT, fontSize: "14px", color: C.textMuted, marginBottom: "20px" }}>{MODULE3.subtitle}</p>
+          <div style={{ background: C.lightBerry, borderRadius: "12px", padding: "20px", marginBottom: "28px" }}>
+            <p style={{ fontFamily: FONT, fontSize: "14px", color: C.darkBerry, lineHeight: 1.7 }}>{MODULE3.intro}</p>
+          </div>
+        </div>
+        {MODULE3.questions.map((q, i) => (
+          <QuestionCard key={i} number={i+1} total={5} question={q.q} options={q.opts} selected={m3[i]} onSelect={v => setM3(p => ({...p, [i]: v}))} />
+        ))}
+        <div style={{ display: "flex", justifyContent: "space-between", paddingTop: "12px" }}>
+          <Btn onClick={() => go(1)}>← Back</Btn>
+          <Btn primary onClick={() => go(3)} disabled={Object.keys(m3).length < 5}>See Your Results →</Btn>
+        </div>
+        <Footer />
+      </Wrap>
+    </div>
+  );
+
+  // ===== RESULTS =====
+  if (step === 3) return (
+    <div style={{ minHeight: "100vh", background: C.bg }}>
+      <Header step={3} />
+      <Wrap>
+        <div className="fadeUp" style={{ textAlign: "center", padding: "40px 0 32px" }}>
+          <div style={{ fontFamily: FONT, fontSize: "11px", fontWeight: 700, color: C.berry, letterSpacing: "2px", textTransform: "uppercase", marginBottom: "12px" }}>YOUR ASSESSMENT RESULTS</div>
+          <h2 style={{ fontFamily: SERIF, fontSize: "28px", fontWeight: 700, color: C.darkBerry, marginBottom: "8px" }}>Your Architecture Is {overallLevel.label}</h2>
+          <p style={{ fontFamily: FONT, fontSize: "14px", color: C.textMuted }}>Here's what the system is costing you.</p>
+        </div>
+
+        <div style={{ background: C.surface, border: "1px solid " + C.border, borderRadius: "16px", padding: "28px", marginBottom: "24px" }}>
+          <ScoreBar label="Institutional Load" score={s1} max={18} level={l1} />
+          <ScoreBar label="Regulation Capacity" score={s2} max={15} level={l2} />
+          <ScoreBar label="Support Architecture" score={s3} max={15} level={l3} />
+        </div>
+
+        <div style={{ background: C.surface, border: "1px solid " + C.border, borderRadius: "16px", padding: "28px", marginBottom: "24px" }}>
+          <h3 style={{ fontFamily: FONT, fontSize: "13px", fontWeight: 700, color: C.berry, letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: "16px" }}>What This Means</h3>
+
+          <div style={{ marginBottom: "20px" }}>
+            <div style={{ fontFamily: FONT, fontSize: "15px", fontWeight: 600, color: C.darkBerry, marginBottom: "6px" }}>Institutional Load — {l1.label}</div>
+            <p style={{ fontFamily: FONT, fontSize: "14px", color: C.text, lineHeight: 1.7 }}>{getInstSummary(s1)}</p>
+          </div>
+          <div style={{ borderTop: "1px solid " + C.border, paddingTop: "20px", marginBottom: "20px" }}>
+            <div style={{ fontFamily: FONT, fontSize: "15px", fontWeight: 600, color: C.darkBerry, marginBottom: "6px" }}>Regulation Capacity — {l2.label}</div>
+            <p style={{ fontFamily: FONT, fontSize: "14px", color: C.text, lineHeight: 1.7 }}>{getRegSummary(s2)}</p>
+          </div>
+          <div style={{ borderTop: "1px solid " + C.border, paddingTop: "20px" }}>
+            <div style={{ fontFamily: FONT, fontSize: "15px", fontWeight: 600, color: C.darkBerry, marginBottom: "6px" }}>Support Architecture — {l3.label}</div>
+            <p style={{ fontFamily: FONT, fontSize: "14px", color: C.text, lineHeight: 1.7 }}>{getSupSummary(s3)}</p>
+          </div>
+        </div>
+
+        {/* The pattern */}
+        {(l1.label === "Crushing" || l2.label === "Crushing" || l3.label === "Crushing") && (
+          <div style={{ background: C.warmLight, border: "1px solid #F5D0C5", borderRadius: "16px", padding: "28px", marginBottom: "24px" }}>
+            <h3 style={{ fontFamily: SERIF, fontSize: "18px", fontWeight: 600, color: C.darkBerry, marginBottom: "12px" }}>The Pattern We See</h3>
+            <p style={{ fontFamily: FONT, fontSize: "14px", color: C.text, lineHeight: 1.8 }}>
+              High institutional load depletes regulation capacity. Depleted regulation makes advocacy harder. Harder advocacy increases institutional friction. The system is self-reinforcing — and it was designed this way. Not maliciously, but structurally. Compliance infrastructure produces exhausted parents because exhausted parents stop pushing back.
+            </p>
+            <p style={{ fontFamily: FONT, fontSize: "14px", color: C.text, lineHeight: 1.8, marginTop: "12px", fontWeight: 600 }}>
+              The answer isn't more resilience. It's different architecture.
+            </p>
+          </div>
+        )}
+
+        {/* Paid unlock */}
+        <div style={{ background: "linear-gradient(135deg, " + C.darkBerry + ", " + C.berry + ")", borderRadius: "16px", padding: "32px", textAlign: "center", marginBottom: "24px" }}>
+          <div style={{ fontSize: "32px", marginBottom: "12px" }}>🔓</div>
+          <h3 style={{ fontFamily: SERIF, fontSize: "22px", fontWeight: 700, color: "#fff", marginBottom: "12px" }}>Unlock Your Full Action Plan</h3>
+          <p style={{ fontFamily: FONT, fontSize: "14px", color: C.midBerry, lineHeight: 1.7, marginBottom: "8px" }}>Your free results show you what the system is costing you. The full plan shows you what to restructure — and how.</p>
+          <div style={{ fontFamily: FONT, fontSize: "13px", color: C.lightBerry, lineHeight: 1.8, marginBottom: "24px", textAlign: "left", maxWidth: "400px", margin: "0 auto 24px" }}>
+            ✓ Institutional load reduction protocol<br/>
+            ✓ Regulation recovery sequence matched to your level<br/>
+            ✓ Support architecture blueprint<br/>
+            ✓ Scripts for boundary-setting with schools and providers<br/>
+            ✓ The compliance-to-consent framework applied to your situation
+          </div>
+          {/* PLACEHOLDER — Replace with your Lemon Squeezy URL */}
+          <a href="https://REPLACE-WITH-LEMONSQUEEZY-PARENT-CHECKOUT-URL.com" target="_blank" rel="noopener" style={{
+            display: "inline-block", padding: "16px 40px", borderRadius: "10px",
+            background: "#fff", color: C.darkBerry,
+            fontFamily: FONT, fontSize: "16px", fontWeight: 700,
+            textDecoration: "none",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+          }}>
+            Unlock Full Results — $19
+          </a>
+          <div style={{ fontFamily: FONT, fontSize: "12px", color: C.midBerry, marginTop: "12px" }}>Instant access. Includes the Parent Regulation Architecture Guide.</div>
+        </div>
+
+        {/* Email capture */}
+        <div style={{ background: C.surface, border: "1px solid " + C.border, borderRadius: "16px", padding: "28px", marginBottom: "24px" }}>
+          {emailGate.done ? (
+            <div className="fadeUp" style={{ textAlign: "center", padding: "20px 0" }}>
+              <div style={{ fontSize: "32px", marginBottom: "12px" }}>✓</div>
+              <div style={{ fontFamily: FONT, fontSize: "16px", fontWeight: 600, color: C.green }}>You're in.</div>
+              <p style={{ fontFamily: FONT, fontSize: "14px", color: C.textMuted, marginTop: "8px" }}>We'll send you resources matched to your results.</p>
+            </div>
+          ) : (
+            <>
+              <h3 style={{ fontFamily: FONT, fontSize: "15px", fontWeight: 600, color: C.darkBerry, marginBottom: "4px" }}>Save your results + get matched resources</h3>
+              <p style={{ fontFamily: FONT, fontSize: "13px", color: C.textMuted, marginBottom: "20px", lineHeight: 1.5 }}>
+                We'll email you a summary and send research-backed tools for parents navigating ND systems. No spam. Unsubscribe anytime.
+              </p>
+              <div style={{ marginBottom: "14px" }}>
+                <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: C.text, marginBottom: "6px", fontFamily: FONT }}>First Name</label>
+                <input type="text" value={emailGate.firstName} onChange={e => setEmailGate(g => ({...g, firstName: e.target.value}))}
+                  placeholder="Your first name"
+                  style={{ width: "100%", padding: "12px 14px", borderRadius: "8px", border: "1.5px solid " + C.border, background: C.bg, fontFamily: FONT, fontSize: "14px", color: C.text, boxSizing: "border-box" }} />
+              </div>
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: C.text, marginBottom: "6px", fontFamily: FONT }}>Email Address</label>
+                <input type="email" value={emailGate.email} onChange={e => setEmailGate(g => ({...g, email: e.target.value, error: ""}))}
+                  placeholder="you@email.com"
+                  style={{ width: "100%", padding: "12px 14px", borderRadius: "8px", border: "1.5px solid " + (emailGate.error ? C.red : C.border), background: C.bg, fontFamily: FONT, fontSize: "14px", color: C.text, boxSizing: "border-box" }} />
+                {emailGate.error && <div style={{ color: C.red, fontSize: "12px", marginTop: "6px", fontFamily: FONT }}>{emailGate.error}</div>}
+              </div>
+              <button onClick={async () => {
+                if (!emailGate.email || !emailGate.email.includes("@")) {
+                  setEmailGate(g => ({...g, error: "Please enter a valid email address."}));
+                  return;
+                }
+                setEmailGate(g => ({...g, submitting: true, error: ""}));
+                try {
+                  const resp = await fetch("https://api.convertkit.com/v3/forms/9135692/subscribe", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      api_key: "5IStEe1bSBePuVK8zOuOkw",
+                      email: emailGate.email,
+                      first_name: emailGate.firstName,
+                      fields: {
+                        source: "regulation-assessment",
+                        lane: "parent",
+                        tool_used: "parent_regulation_assessment",
+                        institutional_score: String(s1),
+                        institutional_level: l1.label,
+                        regulation_score: String(s2),
+                        regulation_level: l2.label,
+                        support_score: String(s3),
+                        support_level: l3.label,
+                        overall_level: overallLevel.label,
+                      },
+                    }),
+                  });
+                  const data = await resp.json();
+                  if (data.error) {
+                    setEmailGate(g => ({...g, submitting: false, error: data.message || "Something went wrong."}));
+                  } else {
+                    setEmailGate(g => ({...g, submitting: false, done: true}));
+                  }
+                } catch (err) {
+                  setEmailGate(g => ({...g, submitting: false, error: "Connection error. Please try again."}));
+                }
+              }} disabled={emailGate.submitting} style={{
+                width: "100%", padding: "14px", borderRadius: "10px", border: "none",
+                background: emailGate.submitting ? C.border : C.berry,
+                color: emailGate.submitting ? C.textMuted : "#fff",
+                fontSize: "15px", fontWeight: 700, fontFamily: FONT,
+                cursor: emailGate.submitting ? "not-allowed" : "pointer",
+                boxShadow: emailGate.submitting ? "none" : "0 2px 12px " + C.berry + "33",
+              }}>
+                {emailGate.submitting ? "Saving..." : "Save My Results"}
+              </button>
+              <div style={{ fontSize: "11px", color: C.textMuted, textAlign: "center", marginTop: "10px", fontFamily: FONT }}>No spam. Your data stays with NDU.</div>
+            </>
+          )}
+        </div>
+
+        {/* Related tools */}
+        <div style={{ background: C.surface, border: "1px solid " + C.border, borderRadius: "16px", padding: "28px", marginBottom: "24px" }}>
+          <h3 style={{ fontFamily: FONT, fontSize: "13px", fontWeight: 700, color: C.berry, letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: "16px" }}>Tools That Map To Your Results</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {l1.label !== "Manageable" && (
+              <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                <div style={{ fontSize: "24px", flexShrink: 0 }}>⚖️</div>
+                <div>
+                  <div style={{ fontFamily: FONT, fontSize: "14px", fontWeight: 600, color: C.darkBerry }}>IEP Decision Engine — $49</div>
+                  <div style={{ fontFamily: FONT, fontSize: "13px", color: C.textMuted, lineHeight: 1.5 }}>Stress-test the school's recommendations, generate calibrated scripts, and walk into your next meeting prepared.</div>
+                  <a href="https://iep-engine-full.netlify.app" target="_blank" rel="noopener" style={{ fontFamily: FONT, fontSize: "13px", color: C.berry, fontWeight: 600, textDecoration: "none" }}>Try it →</a>
+                </div>
+              </div>
+            )}
+            <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+              <div style={{ fontSize: "24px", flexShrink: 0 }}>📋</div>
+              <div>
+                <div style={{ fontFamily: FONT, fontSize: "14px", fontWeight: 600, color: C.darkBerry }}>Before You Sign: IEP Checkpoint — $9</div>
+                <div style={{ fontFamily: FONT, fontSize: "13px", color: C.textMuted, lineHeight: 1.5 }}>A pre-meeting checklist that catches what schools hope you'll miss.</div>
+              </div>
+            </div>
+            {l2.label !== "Manageable" && (
+              <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                <div style={{ fontSize: "24px", flexShrink: 0 }}>🧬</div>
+                <div>
+                  <div style={{ fontFamily: FONT, fontSize: "14px", fontWeight: 600, color: C.darkBerry }}>ND Self-Care Architecture Guide — $19</div>
+                  <div style={{ fontFamily: FONT, fontSize: "13px", color: C.textMuted, lineHeight: 1.5 }}>Rebuild your environment across six spaces. Subtraction, not addition.</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Consult CTA */}
+        <div style={{ background: C.warmLight, border: "1px solid #F5D0C5", borderRadius: "16px", padding: "28px", textAlign: "center", marginBottom: "24px" }}>
+          <h3 style={{ fontFamily: SERIF, fontSize: "18px", fontWeight: 600, color: C.darkBerry, marginBottom: "8px" }}>Need help restructuring your architecture?</h3>
+          <p style={{ fontFamily: FONT, fontSize: "14px", color: C.text, lineHeight: 1.6, marginBottom: "16px" }}>
+            NDU offers 1:1 consulting for parents carrying institutional weight. We build the systems that should already exist.
+          </p>
+          <a href="https://calendly.com/iepspeakup/45" target="_blank" rel="noopener" style={{
+            display: "inline-block", padding: "12px 28px", borderRadius: "10px",
+            border: "1.5px solid " + C.accentWarm, background: "transparent",
+            color: C.accentWarm, fontFamily: FONT, fontSize: "14px", fontWeight: 600,
+            textDecoration: "none"
+          }}>Book a Discovery Call</a>
+        </div>
+
+        <Footer />
+      </Wrap>
+    </div>
+  );
+
+  return null;
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
+</script>
+</body>
+</html>
